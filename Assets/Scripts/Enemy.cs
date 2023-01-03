@@ -31,7 +31,12 @@ public class Enemy : MonoBehaviour
                 {
                     transform.Translate(currentDir * speed * Time.deltaTime);
                 }
-                //Implement path finding here
+                else
+                {
+                    //Implement path finding here
+                    currentNode = DFSAlgorithm();
+                }
+
             }
             else
             {
@@ -68,4 +73,67 @@ public class Enemy : MonoBehaviour
     }
 
     //Implement DFS algorithm method here
+
+    //declare and clear temporary list of nodes
+    private Node DFSAlgorithm()
+    {
+        //current node of the player
+        Node _playerNode = GameManager.Instance.Player.CurrentNode;
+        
+        //variable for the node to set as the new destination (the method will return this)
+        Node _targetNode = null;
+
+        //bool for checking if we have actually found the target node
+        bool _found = false;        
+
+        //list of nodes to be checked, which will be updated in the while loop
+        List<Node> _nodeList = new List<Node>();
+
+        //add the root node to the _nodeList
+        _nodeList.Add(GameManager.Instance.Nodes[0]);
+
+        while (!_found)
+        {
+            //make sure the list isn't empty for whatever reason
+            if(_nodeList != null)
+            {
+                Debug.Log("Checking" + _nodeList[0]);
+                //check if the node at the 'top' of the list is the one we want
+                if(_nodeList[0] == _playerNode)
+                {
+                    //if it is then we return our target node
+                    _targetNode = _nodeList[0];
+                    Debug.Log("Found the target!");
+                    _found = true;
+                }
+                else
+                {
+                    //if it isn't the target, we check if it has children and add the children to the list
+                    if(_nodeList[0].Children != null)
+                    {
+                        foreach(Node n in _nodeList[0].Children)
+                        {
+                            //insert each child into the list at the second position
+                            //once the node being checked is removed one of the child objects will then be at position 0 and take priority
+                            _nodeList.Insert(1, n);
+                        }
+                        //we remove the current node from the list and the loop continues
+                        _nodeList.Remove(_nodeList[0]);
+                    }
+                }
+            }
+            else
+            {
+                Debug.Log("The list of Nodes was exhausted without finding the target/the list was not populated");
+                break;
+            }
+        }
+
+        //return the target node once the for loop is done
+        currentDir = _targetNode.transform.position + new Vector3(0, 0.5f, 0) - transform.position;
+        currentDir = currentDir.normalized;
+        return _targetNode;
+    }
+
+    
 }
