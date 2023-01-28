@@ -27,7 +27,7 @@ public class Enemy : MonoBehaviour
             if (currentNode != null)
             {
                 //If within 0.25 units of the current node.
-                if (Vector3.Distance(transform.position, currentNode.transform.position) > 0.25f)
+                if (Vector3.Distance(transform.position, currentNode.transform.position) > 0.5f)
                 {
                     transform.Translate(currentDir * speed * Time.deltaTime);
                 }
@@ -67,7 +67,8 @@ public class Enemy : MonoBehaviour
     /// </summary>
     void InitializeAgent()
     {
-        currentNode = GameManager.Instance.Nodes[0];
+        int randomStartNode = Random.Range(0, GameManager.Instance.Nodes.Length - 1);
+        currentNode = GameManager.Instance.Nodes[randomStartNode];
         currentDir = currentNode.transform.position - transform.position;
         currentDir = currentDir.normalized;
     }
@@ -77,8 +78,17 @@ public class Enemy : MonoBehaviour
     //declare and clear temporary list of nodes
     private Node DFSAlgorithm()
     {
+        Node _playerNode;
+
         //current node of the player
-        Node _playerNode = GameManager.Instance.Player.CurrentNode;
+        if (GameManager.Instance.Player.TargetNode == null)
+        {
+            _playerNode = GameManager.Instance.Player.CurrentNode;
+        }
+        else
+        {
+            _playerNode = GameManager.Instance.Player.TargetNode;
+        }
         
         //variable for the node to set as the new destination (the method will return this)
         Node _targetNode = null;
@@ -130,7 +140,7 @@ public class Enemy : MonoBehaviour
         }
 
         //return the target node once the for loop is done
-        currentDir = _targetNode.transform.position + new Vector3(0, 0.5f, 0) - transform.position;
+        currentDir = _targetNode.transform.position - transform.position;
         currentDir = currentDir.normalized;
         return _targetNode;
     }
