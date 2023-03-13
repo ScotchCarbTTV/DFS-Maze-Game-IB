@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class Player : MonoBehaviour
 {
@@ -22,6 +23,10 @@ public class Player : MonoBehaviour
 
     //variable for determing which direction to move
     private int movementValue = 0;
+
+    [SerializeField] EventSystem _eventSystem;
+    [SerializeField] GraphicRaycaster gRaycaster;
+    private PointerEventData pData;
 
     // Start is called before the first frame update
     void Start()
@@ -64,6 +69,26 @@ public class Player : MonoBehaviour
     //Implement mouse interaction method here
     private void MouseInteraction()
     {
+        pData = new PointerEventData(_eventSystem);
+
+        pData.position = Input.mousePosition;
+
+        List<RaycastResult> results = new List<RaycastResult> ();
+
+
+        gRaycaster.Raycast(pData, results);
+
+        NavButton nButton;
+
+        foreach(RaycastResult result in results)
+        {
+            if(result.gameObject.TryGetComponent<NavButton>(out nButton))
+            {
+
+            }
+        }
+
+        /*
         NavButton _navButton;
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -79,7 +104,7 @@ public class Player : MonoBehaviour
                     UpdateTargetNode(_navButton.direction);
                 }
             }
-        }
+        }*/
     }
 
     //keyboard movement
