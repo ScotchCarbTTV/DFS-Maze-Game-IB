@@ -17,7 +17,7 @@ public class NodeBlock : MonoBehaviour
     public List<NodeBlock> neighbours = new List<NodeBlock>();
 
     //variable for the 'parent' (eg, the node which was checked before this one during pathfinding) node
-    public NodeBlock parentNode { get; private set; }
+    public NodeBlock pathNode { get; private set; }
 
     //serialized list of vector 3 which the neighbour detection will use for finding neighbours.
     [SerializeField] List<Vector3> neighbourDirections = new List<Vector3>();
@@ -49,10 +49,8 @@ public class NodeBlock : MonoBehaviour
         FindNeighbours();
 
         //subscribe the 'clear parent' method to the BreadthFirstSearch event
-        BreadthFirstSearchTrial.breadthFirstSearchEvent += ClearParentNode;
-
-
-           BreadthFirstSearchTrial.clearColourFromNodesEvent += ResetColour;
+        BreadthFirstSearchTrial.breadthFirstSearchEvent += ClearPathNode;
+        BreadthFirstSearchTrial.clearColourFromNodesEvent += ResetColour;
     }
 
     // Update is called once per frame
@@ -69,14 +67,14 @@ public class NodeBlock : MonoBehaviour
     }
 
     //method for clearing parents.
-    private void ClearParentNode()
+    private void ClearPathNode()
     {
-        parentNode = null;
+        pathNode = null;
     }
 
-    public void SetParent(NodeBlock _parent)
+    public void SetPathNode(NodeBlock _parent)
     {
-        parentNode = _parent;
+        pathNode = _parent;
     }
 
     private void ResetColour()
@@ -135,7 +133,7 @@ public class NodeBlock : MonoBehaviour
 
     private void OnDestroy()
     {
-        BreadthFirstSearchTrial.breadthFirstSearchEvent -= ClearParentNode;
+        BreadthFirstSearchTrial.breadthFirstSearchEvent -= ClearPathNode;
         BreadthFirstSearchTrial.clearColourFromNodesEvent -= ResetColour;
     }
 }

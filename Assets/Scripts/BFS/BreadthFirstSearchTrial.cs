@@ -122,9 +122,9 @@ public class BreadthFirstSearchTrial : MonoBehaviour
                 //IF IT ISN'T, FIND ITS NEIGHBOURS AND ADD THEM TO STACK LIST
                 for (int i = 0; i < currentNode.neighbours.Count; i++)
                 {
-                    if (currentNode.neighbours[i].parentNode == null)
+                    if (currentNode.neighbours[i].pathNode == null)
                     {
-                        currentNode.neighbours[i].SetParent(currentNode);
+                        currentNode.neighbours[i].SetPathNode(currentNode);
                     }
                     if (!stack.Contains(currentNode.neighbours[i]))
                     {
@@ -171,7 +171,7 @@ public class BreadthFirstSearchTrial : MonoBehaviour
                         nodeBlockRoute.Add(currentNode);
                     }
                     currentNode.SetColour(1);
-                    currentNode = currentNode.parentNode;
+                    currentNode = currentNode.pathNode;
                 }
             }
         }

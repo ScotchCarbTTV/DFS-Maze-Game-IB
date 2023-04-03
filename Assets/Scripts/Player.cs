@@ -28,6 +28,8 @@ public class Player : MonoBehaviour
     [SerializeField] GraphicRaycaster gRaycaster;
     private PointerEventData pData;
 
+    private NavButton currentButton;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -45,11 +47,13 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+
         if (moving == false)
         {
-            //Implement inputs and event-callbacks here
-            MouseInteraction();
+            //Implement inputs and event-callbacks here           
             KeyboardMovement();
+            MouseInteraction();
         }
         else
         {
@@ -68,43 +72,37 @@ public class Player : MonoBehaviour
 
     //Implement mouse interaction method here
     private void MouseInteraction()
-    {
+    {       
         pData = new PointerEventData(_eventSystem);
 
-        pData.position = Input.mousePosition;
-
+        pData.position = Input.mousePosition;      
+            
         List<RaycastResult> results = new List<RaycastResult> ();
-
 
         gRaycaster.Raycast(pData, results);
 
-        NavButton nButton;
+        NavButton nButton;               
 
         foreach(RaycastResult result in results)
         {
-            if(result.gameObject.TryGetComponent<NavButton>(out nButton))
+            if (result.gameObject.TryGetComponent<NavButton>(out nButton))
             {
-
+                //Debug.Log("yeag");
+                //assign button that mouse is over to 'currentButton'
+                currentButton = nButton;
+            }
+            else
+            {
+                //set current button to null
+                currentButton = null;
             }
         }
 
-        /*
-        NavButton _navButton;
-
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetMouseButtonDown(0) && currentButton != null)
         {
-            RaycastHit hit;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if(Physics.Raycast(ray, out hit, Mathf.Infinity))
-            {
-                //replace with trygetcomponent for easier?
-                if(hit.collider.TryGetComponent<NavButton>(out _navButton))
-                {
-                    //use the navbutton's direction value to send to the update target node method
-                    UpdateTargetNode(_navButton.direction);
-                }
-            }
-        }*/
+            Debug.Log("pressed the button");
+            UpdateTargetNode(currentButton.direction);
+        }
     }
 
     //keyboard movement
@@ -217,4 +215,5 @@ public class Player : MonoBehaviour
             moving = true;
         }
     }
+  
 }
