@@ -34,7 +34,7 @@ public class Enemy : MonoBehaviour
                 else
                 {
                     //Implement path finding here
-                    currentNode = DFSAlgorithm();
+                    StartCoroutine(DFSAlgorithm());
                 }
 
             }
@@ -76,7 +76,7 @@ public class Enemy : MonoBehaviour
     //Implement DFS algorithm method here
 
     //declare and clear temporary list of nodes
-    private Node DFSAlgorithm()
+    private IEnumerator DFSAlgorithm()
     {
         Node _playerNode;
 
@@ -137,13 +137,13 @@ public class Enemy : MonoBehaviour
                 Debug.Log("The list of Nodes was exhausted without finding the target/the list was not populated");
                 break;
             }
+
+            yield return null;
         }
 
         //return the target node once the for loop is done
         currentDir = _targetNode.transform.position - transform.position;
         currentDir = currentDir.normalized;
-        return _targetNode;
-    }
-
-    
+        currentNode = _targetNode;
+    }    
 }

@@ -168,8 +168,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeBlockPref: {fileID: 5433140469037445212, guid: f39821694461fb5478a97fa674c2a287, type: 3}
-  gridWidth: 10
-  gridHeight: 10
+  gridWidth: 50
+  gridHeight: 50
 --- !u!114 &141736395
 MonoBehaviour:
   m_ObjectHideFlags: 0
