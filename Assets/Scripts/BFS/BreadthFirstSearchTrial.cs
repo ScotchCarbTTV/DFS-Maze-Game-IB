@@ -68,26 +68,15 @@ public class BreadthFirstSearchTrial : MonoBehaviour
         {
             if (destNode != null)
             {
-                searching = true;
-                nodeBlockRoute.Clear();
-                clearColourFromNodesEvent.Invoke();
-                stack.Clear();
-                stack.Add(rootNode);
-
-                //starting with the root node...
-                currentNode = stack[0];
-
-                pathfound = false;
-                pathmade = false;
-                Debug.Log("Starting search");
-                //BreadthFirstSearchAlgorithm();
+                
+                StartCoroutine(BreadthFirstSearchAlgorithm());
             }
         }        
 
-        if (searching == true)
+/*        if (searching == true)
         {
             BreadthFirstSearchAlgorithm();            
-        }
+        }*/
     }
 
     //method for setting destination node
@@ -103,77 +92,100 @@ public class BreadthFirstSearchTrial : MonoBehaviour
         rootNode = _rootNode;
     }
 
-    private void BreadthFirstSearchAlgorithm()
+    private IEnumerator BreadthFirstSearchAlgorithm()
     {
-        if (pathfound == false)
+        searching = true;
+        nodeBlockRoute.Clear();
+        clearColourFromNodesEvent.Invoke();
+        stack.Clear();
+        stack.Add(rootNode);
+
+        //starting with the root node...
+        currentNode = stack[0];
+
+        bool newBoolshit = true;
+
+        pathfound = false;
+        pathmade = false;
+        Debug.Log("Starting search");
+       
+
+        while (searching == true) 
         {
-            if (currentNode == destNode)
+            if (pathfound == false)
             {
-                //start stepping back through the nodes and add them to the route
-                //destNode.SetParent(currentNode);
-                //currentNode = destNode;
-                Debug.Log("Found the path.");
-                clearColourFromNodesEvent.Invoke();
-                pathfound = true;
+                if (currentNode == destNode)
+                {
+                    //start stepping back through the nodes and add them to the route
+                    //destNode.SetParent(currentNode);
+                    //currentNode = destNode;
+                    Debug.Log("Found the path.");
+                    clearColourFromNodesEvent.Invoke();
+                    pathfound = true;
+                }
+                else
+                {
+
+                    //IF IT ISN'T, FIND ITS NEIGHBOURS AND ADD THEM TO STACK LIST
+                    for (int i = 0; i < currentNode.neighbours.Count; i++)
+                    {
+                        if (currentNode.neighbours[i].pathNode == null)
+                        {
+                            currentNode.neighbours[i].SetPathNode(currentNode);
+                        }
+                        if (!stack.Contains(currentNode.neighbours[i]))
+                        {
+
+                            stack.Add(currentNode.neighbours[i]);
+                            //Debug.Log("Added " + currentNode.name + " to stack");                        
+                        }
+                        stack.Remove(currentNode);
+                        // Debug.Log("Can't add anything eelse to the stack for some reason?");
+
+                    }
+
+                    //set the node that's the next in the stack from the current node and continue
+                    if (stack.Count > 0)
+                    {
+                        currentNode = stack[0];
+                        currentNode.SetColour(2);
+                    }
+                    else
+                    {
+                        Debug.Log("The stack is empty");
+                    }
+                }
             }
             else
             {
 
-                //IF IT ISN'T, FIND ITS NEIGHBOURS AND ADD THEM TO STACK LIST
-                for (int i = 0; i < currentNode.neighbours.Count; i++)
+                if (pathmade == false)
                 {
-                    if (currentNode.neighbours[i].pathNode == null)
+                    if (currentNode == rootNode)
                     {
-                        currentNode.neighbours[i].SetPathNode(currentNode);
+                        nodeBlockRoute.Add(rootNode);
+                        rootNode.SetColour(1);
+                        pathmade = true;
+                        searching = false;
+                        Debug.Log("Finished making the path");
                     }
-                    if (!stack.Contains(currentNode.neighbours[i]))
+                    else
                     {
-
-                        stack.Add(currentNode.neighbours[i]);
-                        //Debug.Log("Added " + currentNode.name + " to stack");                        
-                    }                   
-                    stack.Remove(currentNode);
-                        // Debug.Log("Can't add anything eelse to the stack for some reason?");
-                    
-                }
-
-                //set the node that's the next in the stack from the current node and continue
-                if (stack.Count > 0)
-                {
-                    currentNode = stack[0];
-                    currentNode.SetColour(2);
-                }
-                else
-                {
-                    Debug.Log("The stack is empty");
+                        Debug.Log("Drawing path still");
+                        Debug.Log("Current node is " + currentNode.name + ", and the destination node is " + destNode.name);
+                        if (!nodeBlockRoute.Contains(currentNode))
+                        {
+                            nodeBlockRoute.Add(currentNode);
+                        }
+                        currentNode.SetColour(1);
+                        currentNode = currentNode.pathNode;
+                    }
                 }
             }
-        }
-        else
-        {
 
-            if (pathmade == false)
-            {
-                if (currentNode == rootNode)
-                {
-                    nodeBlockRoute.Add(rootNode);
-                    rootNode.SetColour(1);
-                    pathmade = true;
-                    searching = false;
-                    Debug.Log("Finished making the path");
-                }
-                else
-                {
-                    Debug.Log("Drawing path still");
-                    Debug.Log("Current node is " + currentNode.name + ", and the destination node is " + destNode.name);
-                    if (!nodeBlockRoute.Contains(currentNode))
-                    {
-                        nodeBlockRoute.Add(currentNode);
-                    }
-                    currentNode.SetColour(1);
-                    currentNode = currentNode.pathNode;
-                }
-            }
+            
+
+            yield return null;
         }
     }
 

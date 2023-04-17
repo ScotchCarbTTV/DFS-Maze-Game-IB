@@ -9,7 +9,9 @@ public class NodeBlockGenerator : MonoBehaviour
     
     [SerializeField] int gridWidth;
     
-    [SerializeField] int gridHeight;       
+    [SerializeField] int gridHeight;
+
+    [SerializeField] Vector3 gridStartPoint;
 
     private void Awake()
     {
@@ -38,7 +40,7 @@ public class NodeBlockGenerator : MonoBehaviour
             for (int y = 0; y < _height; y++)
             {                
                 //spawn in a block at each coordinate from 0,0, to width, height
-                newNode = Instantiate(nodeBlockPref, new Vector3(x, 2, y), gameObject.transform.rotation, gameObject.transform);
+                newNode = Instantiate(nodeBlockPref, new Vector3(x + gridStartPoint.x, 2, y + gridStartPoint.z), gameObject.transform.rotation, gameObject.transform);
                 newNode.name = "node " + x.ToString() + "," + y.ToString();
                 if (rootNodeSet == false)
                 {
