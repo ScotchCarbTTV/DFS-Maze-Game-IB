@@ -44,6 +44,8 @@ public class Player : MonoBehaviour
         FindNodes();
     }
 
+
+
     // Update is called once per frame
     void Update()
     {
