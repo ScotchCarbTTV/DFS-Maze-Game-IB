@@ -7,39 +7,38 @@ using FiniteStateMachine;
 public class EnemyPathfinding : MonoBehaviour
 {
     //reference to the NavMeshAgent attached to this object
-    private 
-        
-        
-        NavMeshAgent
-        
-        
-        agent;
+    private NavMeshAgent agent;
 
     //object the AI agent is trying to navigate towards
-    [SerializeField] GameObject navPoint;
-
-    [SerializeField] GameObject player;
+    [SerializeField] GameObject navPoint, player;
 
     //floats relating to speed of objects
 
     //floats relating to detction distances
     [SerializeField] float stoppingDistance,
         detectionDistance, 
-        float3,
-        float4,
+        runSpeed,
+        walkSpeed,
         float5,
         hootenani;
 
     public StateMachine StateMachine { get; private set; }
 
+    private Animator animC;
+
     private void Awake()
     {
         StateMachine = new StateMachine();
 
-        if(!TryGetComponent<NavMeshAgent>(out agent))
+        if (!TryGetComponent<NavMeshAgent>(out agent))
         {
             Debug.LogError("This object needs a navmesh agent attached to it");
+            
         }
+
+        animC = GetComponentInChildren<Animator>();
+        
+
     }
 
     // Start is called before the first frame update
@@ -47,6 +46,7 @@ public class EnemyPathfinding : MonoBehaviour
     {
         StateMachine.SetState(new IdleState(this));
         agent.isStopped = true;
+
     }
 
     // Update is called once per frame
@@ -97,6 +97,10 @@ public class EnemyPathfinding : MonoBehaviour
             //set the agent to 'stopped'
             instance.agent.isStopped = false;
             Debug.Log("Entering MoveState");
+
+            instance.agent.speed = instance.walkSpeed;
+
+            instance.animC.SetTrigger("Walk");
         }
 
         public override void OnUpdate()
@@ -121,6 +125,11 @@ public class EnemyPathfinding : MonoBehaviour
                 instance.StateMachine.SetState(new IdleState(instance));
             }
         }
+
+        public override void OnExit()
+        {
+            instance.animC.ResetTrigger("Walk");
+        }
     }
 
     public class IdleState : EnemyMoveState
@@ -133,6 +142,8 @@ public class EnemyPathfinding : MonoBehaviour
         {
             instance.agent.isStopped = true;
             Debug.Log("Entering IdleState");
+
+            instance.animC.SetTrigger("Idle");
         }
 
         public override void OnUpdate()
@@ -147,6 +158,11 @@ public class EnemyPathfinding : MonoBehaviour
                 instance.StateMachine.SetState(new MoveState(instance));
             }
         }
+
+        public override void OnExit()
+        {
+            instance.animC.ResetTrigger("Idle");
+        }
     }
 
     public class ChaseState : EnemyMoveState
@@ -159,6 +175,10 @@ public class EnemyPathfinding : MonoBehaviour
         {
             Debug.Log("Entering ChaseState");
             instance.agent.isStopped = false;
+
+            instance.agent.speed = instance.runSpeed;
+
+            instance.animC.SetTrigger("Run");
         }
 
         public override void OnUpdate()
@@ -171,6 +191,11 @@ public class EnemyPathfinding : MonoBehaviour
             {
                 instance.StateMachine.SetState(new IdleState(instance));
             }
+        }
+
+        public override void OnExit()
+        {
+            instance.animC.ResetTrigger("Run");
         }
     }
 
